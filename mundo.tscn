@@ -86,6 +86,18 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Comprar Gerador (Custo: 50)"
 
+[node name="BotaoAtivarBonus" type="Button" parent="Interface/MenuDeUpgrades"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Ativar Bônus de Clique (x2)"
+
+[node name="BarraDeBonus" type="ProgressBar" parent="Interface"]
+layout_mode = 0
+offset_left = 451.0
+offset_top = 180.0
+offset_right = 701.0
+offset_bottom = 207.0
+
 [node name="GeradorPrincipal" type="ColorRect" parent="."]
 offset_left = 501.0
 offset_top = 249.0
@@ -98,6 +110,12 @@ libraries = {
 &"": SubResource("AnimationLibrary_fw4w5")
 }
 
+[node name="TimerBonus" type="Timer" parent="."]
+wait_time = 10.0
+one_shot = true
+
 [connection signal="pressed" from="Interface/MenuDeUpgrades/BotaoUpgradeClique" to="." method="_on_botao_upgrade_clique_pressed"]
 [connection signal="pressed" from="Interface/MenuDeUpgrades/BotaoComprarGerador" to="." method="_on_botao_comprar_gerador_pressed"]
+[connection signal="pressed" from="Interface/MenuDeUpgrades/BotaoAtivarBonus" to="." method="_on_botao_ativar_bonus_pressed"]
 [connection signal="gui_input" from="GeradorPrincipal" to="." method="_on_gerador_principal_gui_input"]
+[connection signal="timeout" from="TimerBonus" to="." method="_on_timer_bonus_timeout"]

@@ -8,10 +8,15 @@ const SUFIXOS = ["", "k", "M", "B", "T", "Qa", "Qi"] # Adicione quantos quiser!
 @onready var botao_upgrade_clique = $Interface/MenuDeUpgrades/BotaoUpgradeClique
 @onready var botao_comprar_gerador = $Interface/MenuDeUpgrades/BotaoComprarGerador
 @onready var animador_do_gerador = $GeradorPrincipal/AnimationPlayer
+@onready var botao_ativar_bonus = $Interface/MenuDeUpgrades/BotaoAtivarBonus
+@onready var barra_de_bonus = $Interface/BarraDeBonus
+@onready var timer_bonus = $TimerBonus
 
 # --- Variáveis do Jogo ---
 # Armazena a quantidade total de "formas" que o jogador possui.
 var formas_totais = 0
+
+var bonus_ativo = false
 
 # Dicionário para agrupar todas as informações do upgrade de clique.
 var upgrade_clique = {
@@ -37,13 +42,15 @@ func _ready():
 
 func _on_gerador_principal_gui_input(evento):
 	if evento is InputEventMouseButton and evento.button_index == MOUSE_BUTTON_LEFT and evento.is_pressed():
-		# Dispara a animação!
 		animador_do_gerador.play("clique")
 		
-		# O resto da lógica continua igual.
-		formas_totais = formas_totais + upgrade_clique.nivel
+		var formas_ganhas_neste_clique = upgrade_clique.nivel
+		# Se o bônus estiver ativo, dobramos o ganho!
+		if bonus_ativo:
+			formas_ganhas_neste_clique *= 2 # Atalho para: formas_ganhas_neste_clique * 2
+		
+		formas_totais = formas_totais + formas_ganhas_neste_clique
 		atualizar_interface()
-
 
 # Uma função nossa, criada para manter a interface do usuário atualizada.
 func atualizar_interface():
@@ -74,8 +81,15 @@ func _process(delta):
 	# O resto da lógica permanece o mesmo.
 	var formas_geradas_neste_quadro = producao_total_por_segundo * delta
 	formas_totais = formas_totais + formas_geradas_neste_quadro
+	
+		# Atualiza a barra de progresso se o bônus estiver ativo.
+	if bonus_ativo:
+		# Define o valor máximo da barra como o tempo total do timer.
+		barra_de_bonus.max_value = timer_bonus.wait_time
+		# Define o valor atual da barra como o tempo restante.
+		barra_de_bonus.value = timer_bonus.time_left
+	
 	atualizar_interface()
-
 
 func _on_botao_comprar_gerador_pressed():
 	if formas_totais >= gerador_tipo_1.custo_atual:
@@ -150,3 +164,27 @@ func carregar_jogo():
 func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		salvar_jogo()
+
+
+func _on_botao_ativar_bonus_pressed() -> void:
+		# Só ativa o bônus se ele não estiver ativo no momento.
+	if not bonus_ativo:
+		bonus_ativo = true
+		
+		# Inicia o cronômetro.
+		timer_bonus.start()
+		
+		# Desativa o botão para que não possa ser clicado novamente.
+		botao_ativar_bonus.disabled = true
+		
+		# Esconde a barra de progresso (vamos mostrá-la no _process).
+		barra_de_bonus.visible = true
+
+func _on_timer_bonus_timeout() -> void:
+	bonus_ativo = false
+	
+	# Reativa o botão para que possa ser usado de novo.
+	botao_ativar_bonus.disabled = false
+	
+	# Esconde a barra de progresso.
+	barra_de_bonus.visible = false
