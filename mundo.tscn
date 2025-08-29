@@ -1,6 +1,43 @@
-[gd_scene load_steps=2 format=3 uid="uid://b2s5k312re6da"]
+[gd_scene load_steps=5 format=3 uid="uid://b2s5k312re6da"]
 
 [ext_resource type="Script" uid="uid://3iyfcnvqnwxw" path="res://mundo.gd" id="1_6ba58"]
+
+[sub_resource type="Animation" id="Animation_6ba58"]
+resource_name = "clique"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1001, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.9, 0.9), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_lgngo"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fw4w5"]
+_data = {
+&"RESET": SubResource("Animation_lgngo"),
+&"clique": SubResource("Animation_6ba58")
+}
 
 [node name="Mundo" type="Node2D"]
 script = ExtResource("1_6ba58")
@@ -55,6 +92,11 @@ offset_top = 249.0
 offset_right = 651.0
 offset_bottom = 399.0
 color = Color(0.333333, 0.666667, 1, 1)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="GeradorPrincipal"]
+libraries = {
+&"": SubResource("AnimationLibrary_fw4w5")
+}
 
 [connection signal="pressed" from="Interface/MenuDeUpgrades/BotaoUpgradeClique" to="." method="_on_botao_upgrade_clique_pressed"]
 [connection signal="pressed" from="Interface/MenuDeUpgrades/BotaoComprarGerador" to="." method="_on_botao_comprar_gerador_pressed"]
