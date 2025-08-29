@@ -1,5 +1,7 @@
 extends Node2D
 
+const CAMINHO_SALVAMENTO = "user://progresso.cfg"
+
 const SUFIXOS = ["", "k", "M", "B", "T", "Qa", "Qi"] # Adicione quantos quiser!
 
 @onready var exibidor_de_pontos = $Interface/ExibidorDePontos
@@ -30,8 +32,7 @@ var gerador_tipo_1 = {
 
 # Esta função é chamada automaticamente uma vez quando o jogo começa.
 func _ready():
-	# ... (linhas do print) ...
-	formas_totais = 1250 # Linha de teste!
+	carregar_jogo()
 	atualizar_interface()
 
 func _on_gerador_principal_gui_input(evento):
@@ -100,3 +101,52 @@ func formatar_numero(numero):
 	# Retorna o número final formatado com uma casa decimal e o sufixo correto.
 	# Ex: "12.5" + "k" -> "12.5k"
 	return "%.1f%s" % [numero_formatado, SUFIXOS[indice_sufixo]]
+
+func salvar_jogo():
+	print("Salvando o jogo...")
+	# Cria um novo objeto ConfigFile em memória.
+	var arquivo_de_salvamento = ConfigFile.new()
+
+	# Guarda os valores nas seções desejadas.
+	# set_value(seção, chave, valor)
+	arquivo_de_salvamento.set_value("Jogador", "formas_totais", formas_totais)
+	arquivo_de_salvamento.set_value("UpgradeClique", "nivel", upgrade_clique.nivel)
+	arquivo_de_salvamento.set_value("GeradorTipo1", "quantidade", gerador_tipo_1.quantidade)
+
+	# Escreve os dados da memória para o arquivo no disco.
+	var erro = arquivo_de_salvamento.save(CAMINHO_SALVAMENTO)
+
+	# Verificação de erro opcional, mas boa prática.
+	if erro != OK:
+		print("Ocorreu um erro ao salvar o jogo!")
+
+func carregar_jogo():
+	var arquivo_de_salvamento = ConfigFile.new()
+
+	# Primeiro, verifica se o arquivo de salvamento realmente existe.
+	if not FileAccess.file_exists(CAMINHO_SALVAMENTO):
+		print("Nenhum jogo salvo encontrado.")
+		return # Encerra a função se não houver arquivo.
+
+	# Carrega o arquivo do disco para a memória.
+	var erro = arquivo_de_salvamento.load(CAMINHO_SALVAMENTO)
+	if erro != OK:
+		print("Ocorreu um erro ao carregar o jogo!")
+		return
+
+	# Pega os valores do arquivo e os atribui às nossas variáveis.
+	# get_value(seção, chave, valor_padrao_caso_nao_encontre)
+	formas_totais = arquivo_de_salvamento.get_value("Jogador", "formas_totais", 0)
+	upgrade_clique.nivel = arquivo_de_salvamento.get_value("UpgradeClique", "nivel", 1)
+	gerador_tipo_1.quantidade = arquivo_de_salvamento.get_value("GeradorTipo1", "quantidade", 0)
+
+	# --- Passo Crítico: Recalcular Dados Derivados ---
+	# Com os níveis e quantidades carregados, recalculamos os custos atuais.
+	upgrade_clique.custo_atual = floor(upgrade_clique.custo_base * pow(upgrade_clique.fator_de_custo, upgrade_clique.nivel))
+	gerador_tipo_1.custo_atual = floor(gerador_tipo_1.custo_base * pow(gerador_tipo_1.fator_de_custo, gerador_tipo_1.quantidade))
+
+	print("Jogo carregado com sucesso!")
+
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		salvar_jogo()
