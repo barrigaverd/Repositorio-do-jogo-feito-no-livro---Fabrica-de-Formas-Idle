@@ -2,6 +2,7 @@ extends Node2D
 
 @onready var exibidor_de_pontos = $Interface/ExibidorDePontos
 @onready var botao_upgrade_clique = $Interface/MenuDeUpgrades/BotaoUpgradeClique
+@onready var botao_comprar_gerador = $Interface/MenuDeUpgrades/BotaoComprarGerador
 
 # --- Variáveis do Jogo ---
 # Armazena a quantidade total de "formas" que o jogador possui.
@@ -10,6 +11,10 @@ var formas_totais = 0
 var formas_por_clique = 1
 # Armazena o custo do próximo upgrade de clique.
 var custo_do_upgrade_de_clique = 10
+# Armazena quantas formas são geradas automaticamente por segundo.
+var formas_por_segundo = 0.0
+# Armazena o custo do nosso primeiro tipo de gerador.
+var custo_do_primeiro_gerador = 50
 
 # Esta função é chamada automaticamente uma vez quando o jogo começa.
 func _ready():
@@ -29,10 +34,9 @@ func _on_gerador_principal_gui_input(evento):
 
 # Uma função nossa, criada para manter a interface do usuário atualizada.
 func atualizar_interface():
-	exibidor_de_pontos.text = "Formas: %s" % formas_totais
+	exibidor_de_pontos.text = "Formas: %s" % int(formas_totais)
 	botao_upgrade_clique.text = "Melhorar Clique (Custo: %s)" % custo_do_upgrade_de_clique
-
-
+	botao_comprar_gerador.text = "Comprar Gerador (Custo: %s)" % custo_do_primeiro_gerador
 
 func _on_botao_upgrade_clique_pressed():
 	# Passo 1: O jogo verifica se o jogador tem formas suficientes.
@@ -52,3 +56,27 @@ func _on_botao_upgrade_clique_pressed():
 		
 		# Passo 5: Atualiza toda a interface.
 		atualizar_interface()
+		
+# Esta função é chamada a cada quadro (frame) do jogo.
+# 'delta' é o tempo em segundos que passou desde o último quadro.
+func _process(delta):
+	# Calcula quantas formas foram geradas neste exato quadro.
+	var formas_geradas_neste_quadro = formas_por_segundo * delta
+	
+	# Adiciona o valor calculado ao nosso total de formas.
+	formas_totais = formas_totais + formas_geradas_neste_quadro
+	
+	# Atualiza a interface para que o jogador veja a pontuação subindo!
+	atualizar_interface()
+
+func _on_botao_comprar_gerador_pressed():
+	# Verifica se o jogador pode pagar pelo gerador.
+	if formas_totais >= custo_do_primeiro_gerador:
+		# Se puder, subtrai o custo.
+		formas_totais = formas_totais - custo_do_primeiro_gerador
+		
+		# Aumenta a produção de formas por segundo.
+		formas_por_segundo = formas_por_segundo + 0.5 # Cada gerador adiciona 0.5 formas/s
+		
+		# Aumenta o custo para o próximo gerador.
+		custo_do_primeiro_gerador = floor(custo_do_primeiro_gerador * 1.20) # 20% mais caro

@@ -44,6 +44,11 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Melhorar Clique (Custo: 10)"
 
+[node name="BotaoComprarGerador" type="Button" parent="Interface/MenuDeUpgrades"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Comprar Gerador (Custo: 50)"
+
 [node name="GeradorPrincipal" type="ColorRect" parent="."]
 offset_left = 501.0
 offset_top = 249.0
@@ -52,4 +57,5 @@ offset_bottom = 399.0
 color = Color(0.333333, 0.666667, 1, 1)
 
 [connection signal="pressed" from="Interface/MenuDeUpgrades/BotaoUpgradeClique" to="." method="_on_botao_upgrade_clique_pressed"]
+[connection signal="pressed" from="Interface/MenuDeUpgrades/BotaoComprarGerador" to="." method="_on_botao_comprar_gerador_pressed"]
 [connection signal="gui_input" from="GeradorPrincipal" to="." method="_on_gerador_principal_gui_input"]
