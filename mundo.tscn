@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://b2s5k312re6da"]
+[gd_scene load_steps=7 format=3 uid="uid://b2s5k312re6da"]
 
 [ext_resource type="Script" uid="uid://3iyfcnvqnwxw" path="res://mundo.gd" id="1_6ba58"]
 
@@ -38,6 +38,13 @@ _data = {
 &"RESET": SubResource("Animation_lgngo"),
 &"clique": SubResource("Animation_6ba58")
 }
+
+[sub_resource type="Curve" id="Curve_6ba58"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_lgngo"]
+colors = PackedColorArray(0.333333, 0.666667, 1, 1, 1, 1, 1, 0)
 
 [node name="Mundo" type="Node2D"]
 script = ExtResource("1_6ba58")
@@ -109,6 +116,21 @@ color = Color(0.333333, 0.666667, 1, 1)
 libraries = {
 &"": SubResource("AnimationLibrary_fw4w5")
 }
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="GeradorPrincipal"]
+position = Vector2(75, 23)
+emitting = false
+amount = 124
+one_shot = true
+emission_shape = 1
+emission_sphere_radius = 10.0
+spread = 180.0
+initial_velocity_min = 150.0
+initial_velocity_max = 200.0
+scale_amount_min = 0.0
+scale_amount_max = 5.0
+scale_amount_curve = SubResource("Curve_6ba58")
+color_ramp = SubResource("Gradient_lgngo")
 
 [node name="TimerBonus" type="Timer" parent="."]
 wait_time = 10.0

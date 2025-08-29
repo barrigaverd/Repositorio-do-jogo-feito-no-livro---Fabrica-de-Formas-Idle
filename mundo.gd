@@ -11,6 +11,7 @@ const SUFIXOS = ["", "k", "M", "B", "T", "Qa", "Qi"] # Adicione quantos quiser!
 @onready var botao_ativar_bonus = $Interface/MenuDeUpgrades/BotaoAtivarBonus
 @onready var barra_de_bonus = $Interface/BarraDeBonus
 @onready var timer_bonus = $TimerBonus
+@onready var particulas_do_clique = $GeradorPrincipal/CPUParticles2D
 
 # --- Variáveis do Jogo ---
 # Armazena a quantidade total de "formas" que o jogador possui.
@@ -42,7 +43,9 @@ func _ready():
 
 func _on_gerador_principal_gui_input(evento):
 	if evento is InputEventMouseButton and evento.button_index == MOUSE_BUTTON_LEFT and evento.is_pressed():
+		# Dispara a animação e as partículas!
 		animador_do_gerador.play("clique")
+		particulas_do_clique.restart()
 		
 		var formas_ganhas_neste_clique = upgrade_clique.nivel
 		# Se o bônus estiver ativo, dobramos o ganho!
