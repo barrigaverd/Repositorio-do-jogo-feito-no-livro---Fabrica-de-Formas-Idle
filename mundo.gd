@@ -1,5 +1,7 @@
 extends Node2D
 
+const SUFIXOS = ["", "k", "M", "B", "T", "Qa", "Qi"] # Adicione quantos quiser!
+
 @onready var exibidor_de_pontos = $Interface/ExibidorDePontos
 @onready var botao_upgrade_clique = $Interface/MenuDeUpgrades/BotaoUpgradeClique
 @onready var botao_comprar_gerador = $Interface/MenuDeUpgrades/BotaoComprarGerador
@@ -28,6 +30,8 @@ var gerador_tipo_1 = {
 
 # Esta função é chamada automaticamente uma vez quando o jogo começa.
 func _ready():
+	# ... (linhas do print) ...
+	formas_totais = 1250 # Linha de teste!
 	atualizar_interface()
 
 func _on_gerador_principal_gui_input(evento):
@@ -42,9 +46,10 @@ func _on_gerador_principal_gui_input(evento):
 
 # Uma função nossa, criada para manter a interface do usuário atualizada.
 func atualizar_interface():
-	exibidor_de_pontos.text = "Formas: %s" % int(formas_totais)
-	botao_upgrade_clique.text = "Melhorar Clique (Custo: %s)" % upgrade_clique.custo_atual
-	botao_comprar_gerador.text = "Comprar Gerador (Custo: %s)" % gerador_tipo_1.custo_atual
+	exibidor_de_pontos.text = "Formas: %s" % formatar_numero(formas_totais)
+	botao_upgrade_clique.text = "Melhorar Clique (Custo: %s)" % formatar_numero(upgrade_clique.custo_atual)
+	botao_comprar_gerador.text = "Comprar Gerador (Custo: %s)" % formatar_numero(gerador_tipo_1.custo_atual)
+
 
 
 func _on_botao_upgrade_clique_pressed():
@@ -76,3 +81,22 @@ func _on_botao_comprar_gerador_pressed():
 		formas_totais = formas_totais - gerador_tipo_1.custo_atual
 		gerador_tipo_1.quantidade += 1
 		gerador_tipo_1.custo_atual = floor(gerador_tipo_1.custo_base * pow(gerador_tipo_1.fator_de_custo, gerador_tipo_1.quantidade))
+
+
+func formatar_numero(numero):
+	# Se o número for muito pequeno, apenas o retorne como um inteiro.
+	if numero < 1000:
+		return str(int(numero))
+
+	# Prepara as variáveis para o cálculo.
+	var numero_formatado = float(numero)
+	var indice_sufixo = 0
+
+	# Loop: Enquanto o número for maior ou igual a 1000 e ainda tivermos sufixos na lista.
+	while numero_formatado >= 1000 and indice_sufixo < SUFIXOS.size() - 1:
+		numero_formatado /= 1000.0 # Atalho para numero_formatado = numero_formatado / 1000.0
+		indice_sufixo += 1
+
+	# Retorna o número final formatado com uma casa decimal e o sufixo correto.
+	# Ex: "12.5" + "k" -> "12.5k"
+	return "%.1f%s" % [numero_formatado, SUFIXOS[indice_sufixo]]
