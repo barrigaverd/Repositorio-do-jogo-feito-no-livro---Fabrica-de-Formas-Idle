@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://c3o22uyxwkngo"]
+
+[node name="ColorRect" type="ColorRect"]
+offset_right = 256.0
+offset_bottom = 256.0
+color = Color(0.233925, 0.233925, 0.233925, 1)
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+position = Vector2(-20, 5)
+color = Color(0.333333, 0.666667, 1, 1)
+offset = Vector2(100, 100)
+antialiased = true
+polygon = PackedVector2Array(-24, -46, -24, 94, 124, 95, 124, -46)
